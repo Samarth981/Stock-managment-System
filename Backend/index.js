@@ -7,7 +7,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 const errorHandler = require("./Middlewares/errorHandler");
-const { refreshToken } = require("./controllers/TokenController");
+const { refreshToken } = require("./Controllers/TokenController");
 
 const holdingsRoutes = require("./routes/holdingsRoutes");
 const positionsRoutes = require("./routes/positionsRoutes");
