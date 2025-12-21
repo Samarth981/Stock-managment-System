@@ -1,13 +1,13 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
-import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import IconButton from '@mui/material/IconButton';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import React, { useContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import IconButton from "@mui/material/IconButton";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 
 const Menu = () => {
   const { logout } = useContext(AuthContext);
@@ -25,7 +25,7 @@ const Menu = () => {
 
   const handleProfileClick = (event) => {
     setIsProfileDropdownOpen(
-      isProfileDropdownOpen ? null : event.currentTarget,
+      isProfileDropdownOpen ? null : event.currentTarget
     );
   };
 
@@ -38,16 +38,16 @@ const Menu = () => {
     const handleClickOutside = (event) => {
       if (
         isProfileDropdownOpen &&
-        !document.getElementById('profile-dropdown')?.contains(event.target) &&
-        !document.getElementById('profile-icon')?.contains(event.target)
+        !document.getElementById("profile-dropdown")?.contains(event.target) &&
+        !document.getElementById("profile-icon")?.contains(event.target)
       ) {
         setIsProfileDropdownOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isProfileDropdownOpen]);
 
@@ -56,7 +56,7 @@ const Menu = () => {
       {/* Mobile Menu Icon */}
       <IconButton
         onClick={() => setIsMobileMenuOpen(true)}
-        sx={{ display: { xs: 'block', md: 'none' } }}
+        sx={{ display: { xs: "block", md: "none" } }}
       >
         <MenuIcon />
       </IconButton>
@@ -66,22 +66,22 @@ const Menu = () => {
         anchor="left"
         open={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
-        sx={{ display: { xs: 'block', md: 'none' } }}
+        sx={{ display: { xs: "block", md: "none" } }}
       >
         <List>
           {[
-            'Dashboard',
-            'Orders',
-            'Holdings',
-            'Positions',
-            'Funds',
-            'Apps',
+            "Dashboard",
+            "Orders",
+            "Holdings",
+            "Positions",
+            "Funds",
+            // 'Apps',
           ].map((text, index) => (
             <ListItem
               key={text}
               onClick={() => handleMenuClick(index)}
               component={Link}
-              to={text === 'Dashboard' ? '/' : `/${text.toLowerCase()}`}
+              to={text === "Dashboard" ? "/" : `/${text.toLowerCase()}`}
             >
               <ListItemText primary={text} />
             </ListItem>
@@ -90,25 +90,25 @@ const Menu = () => {
       </Drawer>
 
       {/* Desktop Menu */}
-      <img src="logo.png" alt="Logo" style={{ width: '50px' }} />
+      <img src="logo.png" alt="Logo" style={{ width: "50px" }} />
       <div className="menus">
         <ul>
           {[
-            { name: 'Summary', path: '/' },
-            { name: 'Orders', path: '/orders' },
-            { name: 'Holdings', path: '/holdings' },
-            { name: 'Positions', path: '/positions' },
-            { name: 'Funds', path: '/funds' },
-            { name: 'Apps', path: '/apps' },
+            { name: "Summary", path: "/" },
+            { name: "Orders", path: "/orders" },
+            { name: "Holdings", path: "/holdings" },
+            { name: "Positions", path: "/positions" },
+            { name: "Funds", path: "/funds" },
+            // { name: "Apps", path: "/apps" },
           ].map((item, index) => (
             <li key={item.name}>
               <Link
-                style={{ textDecoration: 'none' }}
+                style={{ textDecoration: "none" }}
                 to={item.path}
                 onClick={() => handleMenuClick(index)}
               >
                 <p
-                  className={selectedMenu === index ? 'menu selected' : 'menu'}
+                  className={selectedMenu === index ? "menu selected" : "menu"}
                 >
                   {item.name}
                 </p>
@@ -119,7 +119,7 @@ const Menu = () => {
         <hr />
 
         {/* Profile Icon */}
-        <IconButton onClick={handleProfileClick} sx={{ ml: 'auto' }}>
+        <IconButton onClick={handleProfileClick} sx={{ ml: "auto" }}>
           <AccountCircle />
         </IconButton>
 

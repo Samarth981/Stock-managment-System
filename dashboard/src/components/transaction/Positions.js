@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 
-import axiosInstance from '../../utils/axiosInstance';
+import axiosInstance from "../../utils/axiosInstance";
+import { Snackbar, Alert } from "@mui/material";
 
-import AuthContext from '../../context/AuthContext';
+import AuthContext from "../../context/AuthContext";
 
 const Positions = () => {
   const { user, loading: authLoading } = useContext(AuthContext);
@@ -10,6 +11,10 @@ const Positions = () => {
   const [allPositions, setAllPositions] = useState([]);
 
   const [loading, setLoading] = useState(true); // Track loading state
+  const [error, setError] = useState(null);
+  const [openError, setOpenError] = useState(false);
+
+  const handleCloseError = () => setOpenError(false);
 
   useEffect(() => {
     const fetchPositions = async () => {
@@ -18,10 +23,11 @@ const Positions = () => {
       setLoading(true);
 
       try {
-        const response = await axiosInstance.get('/positions');
+        const response = await axiosInstance.get("/positions");
         setAllPositions(response.data);
       } catch (error) {
-        console.error('Error fetching positions:', error);
+        setError("Failed to fetch positions. Please try again later.");
+        setOpenError(true);
       } finally {
         setLoading(false); // Set loading to false after fetch
       }
@@ -58,8 +64,8 @@ const Positions = () => {
               const curValue = stock.price * stock.qty;
               const profitLoss = curValue - stock.avg * stock.qty;
               const isProfit = profitLoss >= 0;
-              const profitClass = isProfit ? 'profit' : 'loss';
-              const dayClass = stock.isLoss ? 'loss' : 'profit';
+              const profitClass = isProfit ? "profit" : "loss";
+              const dayClass = stock.isLoss ? "loss" : "profit";
 
               return (
                 <tr key={index}>
@@ -76,6 +82,20 @@ const Positions = () => {
           </tbody>
         </table>
       </div>
+      <Snackbar
+        open={openError}
+        autoHideDuration={4000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

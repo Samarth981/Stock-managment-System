@@ -1,30 +1,30 @@
-import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 
-import axiosInstance from '../../utils/axiosInstance';
+import axiosInstance from "../../utils/axiosInstance";
 
-import GeneralContext from '../../context/GeneralContext';
-import AuthContext from '../../context/AuthContext';
+import GeneralContext from "../../context/GeneralContext";
+import AuthContext from "../../context/AuthContext";
 
-import './BuyActionWindow.css';
+import "./BuyActionWindow.css";
 
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(1);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const generalContext = useContext(GeneralContext);
   const { user } = useContext(AuthContext);
 
   const validateInput = () => {
     if (stockQuantity < 1) {
-      setError('Quantity must be greater than zero.');
+      setError("Quantity must be greater than zero.");
       return false;
     } else if (stockPrice < 1) {
-      setError('Price must be greater than zero.');
+      setError("Price must be greater than zero.");
       return false;
     }
 
-    setError('');
+    setError("");
     return true;
   };
 
@@ -42,37 +42,36 @@ const BuyActionWindow = ({ uid }) => {
       (setter === setStockQuantity && value >= 1) ||
       (setter === setStockPrice && value >= 1)
     ) {
-      setError('');
+      setError("");
     }
   };
 
   const handleBuyClick = () => {
     if (!user) {
-      setError('Please log in to sell stocks.');
+      setError("Please log in to sell stocks.");
       return;
     }
     if (!validateInput()) return;
 
     try {
-      axiosInstance.post('/Neworder', {
+      axiosInstance.post("/Neworder", {
         userId: user.id, // Include userId from AuthContext
         name: uid,
         qty: stockQuantity,
         price: stockPrice,
-        mode: 'BUY',
+        mode: "BUY",
         time: new Date().toISOString(),
       });
       generalContext.closeBuyWindow();
     } catch (error) {
-      console.error('Error placing Buy order:', error);
-      setError(error.response?.data?.error || 'Failed to place buy order.');
+      setError(error.response?.data?.error || "Failed to place buy order.");
     }
   };
 
   return (
     <div className="container" id="buy-window" draggable="true">
       {error && (
-        <div className="error-message" style={{ color: 'red', margin: '2px' }}>
+        <div className="error-message" style={{ color: "red", margin: "2px" }}>
           {error}
         </div>
       )}

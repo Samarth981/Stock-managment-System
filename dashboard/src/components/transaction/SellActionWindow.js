@@ -1,17 +1,17 @@
-import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 
-import axiosInstance from '../../utils/axiosInstance';
+import axiosInstance from "../../utils/axiosInstance";
 
-import GeneralContext from '../../context/GeneralContext';
-import AuthContext from '../../context/AuthContext';
+import GeneralContext from "../../context/GeneralContext";
+import AuthContext from "../../context/AuthContext";
 
-import './BuyActionWindow.css';
+import "./BuyActionWindow.css";
 
 const SellActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(1);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const generalContext = useContext(GeneralContext);
   const { user } = useContext(AuthContext);
 
@@ -21,14 +21,14 @@ const SellActionWindow = ({ uid }) => {
 
   const validateInput = () => {
     if (stockQuantity < 1) {
-      setError('Quantity must be greater than zero.');
+      setError("Quantity must be greater than zero.");
       return false;
     } else if (stockPrice < 1) {
-      setError('Price must be greater than zero.');
+      setError("Price must be greater than zero.");
       return false;
     }
 
-    setError('');
+    setError("");
     return true;
   };
 
@@ -41,39 +41,38 @@ const SellActionWindow = ({ uid }) => {
       (setter === setStockQuantity && value >= 1) ||
       (setter === setStockPrice && value >= 1)
     ) {
-      setError('');
+      setError("");
     }
   };
 
   const handleSellClick = async () => {
     if (!user) {
-      setError('Please log in to sell stocks.');
+      setError("Please log in to sell stocks.");
       return;
     }
     if (!validateInput()) return;
 
     try {
-      const response = await axiosInstance.post('/sell', {
+      const response = await axiosInstance.post("/sell", {
         userId: user.id, // Include userId from AuthContext
         name: uid,
         qty: stockQuantity,
         price: stockPrice,
-        mode: 'SELL',
+        mode: "SELL",
         time: new Date().toISOString(),
       });
 
       if (response.status === 200) {
         generalContext.closeSellWindow();
       } else {
-        setError('Failed to sell stock. Please try again.');
+        setError("Failed to sell stock. Please try again.");
       }
     } catch (error) {
-      console.error('Error placing sell order:', error);
       // Set error message based on the backend response
       if (error.response) {
-        setError(error.response?.data?.error || 'Failed to sell stock.');
+        setError(error.response?.data?.error || "Failed to sell stock.");
       } else {
-        setError('An unexpected error occurred. Please try again.');
+        setError("An unexpected error occurred. Please try again.");
       }
     }
   };
@@ -81,7 +80,7 @@ const SellActionWindow = ({ uid }) => {
   return (
     <div className="container" id="buy-window" draggable="true">
       {error && (
-        <div className="error-message" style={{ color: 'red', margin: '2px' }}>
+        <div className="error-message" style={{ color: "red", margin: "2px" }}>
           {error}
         </div>
       )}

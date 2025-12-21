@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 
-import axiosInstance from '../../utils/axiosInstance';
+import axiosInstance from "../../utils/axiosInstance";
 
-import AuthContext from '../../context/AuthContext';
+import AuthContext from "../../context/AuthContext";
+import { Snackbar, Alert } from "@mui/material";
 
-import { VerticalBarChart } from '../charts/VerticalBarChart';
+import { VerticalBarChart } from "../charts/VerticalBarChart";
 
 const Holdings = () => {
   const { user, loading: authLoading } = useContext(AuthContext);
@@ -13,6 +14,11 @@ const Holdings = () => {
 
   const [loading, setLoading] = useState(true); // Track loading state
 
+  const [error, setError] = useState(null);
+  const [openError, setOpenError] = useState(false);
+
+  const handleCloseError = () => setOpenError(false);
+
   useEffect(() => {
     const fetchPositions = async () => {
       if (!user) return;
@@ -20,10 +26,11 @@ const Holdings = () => {
       setLoading(true);
 
       try {
-        const response = await axiosInstance.get('/holdings');
+        const response = await axiosInstance.get("/holdings");
         setAllHoldings(response.data);
       } catch (error) {
-        console.error('Error fetching positions:', error);
+        setError("Failed to fetch holdings. Please try again later.");
+        setOpenError(true);
       } finally {
         setLoading(false);
       }
@@ -39,20 +46,19 @@ const Holdings = () => {
   }
 
   //chart
-  const labels = allHoldings.map((subArray) => subArray['name']);
+  const labels = allHoldings.map((subArray) => subArray["name"]);
 
   const data = {
     labels,
     datasets: [
       {
-        label: 'Stock price',
+        label: "Stock price",
         data: allHoldings.map((stock) => stock.price),
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
     ],
   };
 
-  console.log('holdings is rer-render');
   return (
     <>
       <h3 className="title">Holdings ({allHoldings.length})</h3>
@@ -76,8 +82,8 @@ const Holdings = () => {
               const curValue = stock.price * stock.qty;
               const profitLoss = curValue - stock.avg * stock.qty;
               const isProfit = profitLoss >= 0;
-              const profitClass = isProfit ? 'profit' : 'loss';
-              const dayClass = stock.isLoss ? 'loss' : 'profit';
+              const profitClass = isProfit ? "profit" : "loss";
+              const dayClass = stock.isLoss ? "loss" : "profit";
 
               return (
                 <tr key={index}>
@@ -115,6 +121,20 @@ const Holdings = () => {
         </div>
       </div>
       <VerticalBarChart data={data} />
+      <Snackbar
+        open={openError}
+        autoHideDuration={4000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
