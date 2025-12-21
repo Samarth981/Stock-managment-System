@@ -20,56 +20,100 @@ const symbols = [
   "HUL",
 ];
 
+//manual data
+let cache = [
+  {
+    name: "INFY",
+    price: 1650.25,
+    percent: "0.45%",
+    isDown: false,
+  },
+  {
+    name: "ONGC",
+    price: 210.1,
+    percent: "-0.25%",
+    isDown: true,
+  },
+  {
+    name: "TCS",
+    price: 3450.75,
+    percent: "1.10%",
+    isDown: false,
+  },
+  {
+    name: "KPITTECH",
+    price: 890.4,
+    percent: "0.00%",
+    isDown: false,
+  },
+  {
+    name: "QUICKHEAL",
+    price: 150.0,
+    percent: "0.30%",
+    isDown: false,
+  },
+  {
+    name: "WIPRO",
+    price: 420.5,
+    percent: "-0.15%",
+    isDown: true,
+  },
+  {
+    name: "RELIANCE",
+    price: 2450.0,
+    percent: "0.75%",
+    isDown: false,
+  },
+  {
+    name: "HUL",
+    price: 2600.3,
+    percent: "-0.05%",
+    isDown: true,
+  },
+];
+
+let updateIndex = 0;
+
 const toApiSymbol = (symbol) => {
   const mapped = symbolMap[symbol.toUpperCase()] || symbol;
   if (/.(BSE|NSE)$/i.test(mapped)) return mapped;
   return `${mapped}.${DEFAULT_EXCHANGE}`;
 };
 
-const cache = {};
-
 router.get("/watchlist", async (req, res) => {
-  const results = [];
+  const symbolToUpdate = symbols[updateIndex % symbols.length];
 
-  for (const symbol of symbols) {
-    try {
-      const response = await axios.get("https://www.alphavantage.co/query", {
-        params: {
-          function: "GLOBAL_QUOTE",
-          symbol: toApiSymbol(symbol),
-          apikey: API_KEY,
-        },
-        timeout: 15000,
-      });
+  try {
+    const response = await axios.get("https://www.alphavantage.co/query", {
+      params: {
+        function: "GLOBAL_QUOTE",
+        symbol: toApiSymbol(symbolToUpdate),
+        apikey: API_KEY,
+      },
+      timeout: 15000,
+    });
 
-      const data = response.data["Global Quote"];
-      if (data) {
-        const price = parseFloat(data["05. price"]);
-        const change = parseFloat(data["09. change"]);
-        const changePercent = data["10. change percent"];
+    const data = response.data["Global Quote"];
+    if (data) {
+      const price = parseFloat(data["05. price"]);
+      const change = parseFloat(data["09. change"]);
+      const changePercent = data["10. change percent"];
 
-        cache[symbol] = {
-          name: symbol,
-          price: Number.isFinite(price) ? price : 0,
-          percent: changePercent || "0.00%",
-          isDown: Number.isFinite(change) ? change < 0 : false,
-          lastUpdated: new Date().toISOString(),
-        };
-      } else {
-        console.log("No data returned");
-      }
-    } catch (err) {
-      console.log("data not available");
+      cache = cache.map((item) =>
+        item.name === symbolToUpdate
+          ? {
+              ...item,
+              price: Number.isFinite(price) ? price : item.price,
+              percent: changePercent || item.percent,
+              isDown: Number.isFinite(change) ? change < 0 : item.isDown,
+            }
+          : item
+      );
     }
-
-    // always return cached data if available
-    if (cache[symbol]) results.push(cache[symbol]);
-
-    // shorter delay (e.g., 12s) to respect API limits
-    await new Promise((r) => setTimeout(r, 12000));
+  } catch (err) {
+    ValidationError(`Error fetching ${symbolToUpdate}`);
   }
-
-  res.json(results);
+  updateIndex++;
+  res.json(cache);
 });
-
 module.exports = router;
