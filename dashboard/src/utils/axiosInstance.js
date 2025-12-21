@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:3002",
+  baseURL: "https://marketpulse-rig8.onrender.com",
   withCredentials: true,
 });
 
@@ -67,7 +67,7 @@ axiosInstance.interceptors.response.use(
 
               try {
                 const { data: tokenData } = await axios.post(
-                  "http://localhost:3002/refresh-token",
+                  "https://marketpulse-rig8.onrender.com/refresh-token",
                   {},
                   { withCredentials: true }
                 );
