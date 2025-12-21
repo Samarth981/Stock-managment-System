@@ -32,6 +32,9 @@ app.use(
   })
 );
 
+app.get("/", (req, res) => {
+  res.send("Running");
+});
 // Public Routes
 app.use("/auth", authRoute);
 
