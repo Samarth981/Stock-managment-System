@@ -5,7 +5,7 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-function showErrorPopup(message) {
+export const showErrorPopup = (message) => {
   const popup = document.createElement("div");
   popup.style.position = "fixed";
   popup.style.top = "20px";
@@ -37,7 +37,7 @@ function showErrorPopup(message) {
       document.body.removeChild(popup);
     }, 300);
   }, 2000);
-}
+};
 
 axiosInstance.interceptors.response.use(
   (response) => response,
