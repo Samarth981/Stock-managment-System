@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import axiosInstance from "../utils/axiosInstance"; // use your configured axios
+import axiosInstance, { showErrorPopup } from "../utils/axiosInstance";
+
 import GeneralContext from "../context/GeneralContext";
 import { Snackbar, Alert } from "@mui/material";
 import { Tooltip, Grow } from "@mui/material";
@@ -49,6 +50,13 @@ const WatchList = () => {
 
           return updated;
         });
+        //if error
+        if (res.data.errors && res.data.errors.length > 0) {
+          console.error("Some symbols failed:", res.data.errors);
+          setError("Some stocks failed to load. Check console for details.");
+          setOpenError(true);
+          showErrorPopup("Some stocks failed to load.");
+        }
       } catch (err) {
         setError("Failed to fetch watchlist. Please try again later.");
         setOpenError(true);

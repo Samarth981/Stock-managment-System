@@ -28,7 +28,7 @@ const toApiSymbol = (symbol) => {
 
 router.get("/watchlist", async (req, res) => {
   const results = [];
-
+  const errors = [];
   for (const symbol of symbols) {
     const apiSymbol = toApiSymbol(symbol);
     try {
@@ -57,11 +57,11 @@ router.get("/watchlist", async (req, res) => {
       };
       results.push(result);
     } catch (err) {
-      throw new ValidationError(`Error fetching ${symbol}:`, err.message);
+      errors.push({ symbol, error: err.message });
     }
   }
 
-  res.json(results);
+  res.json({ results, errors });
 });
 
 module.exports = router;
