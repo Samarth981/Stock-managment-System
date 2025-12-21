@@ -50,16 +50,8 @@ const WatchList = () => {
 
           return updated;
         });
-        //if error
-        if (res.data.errors && res.data.errors.length > 0) {
-          console.error("Some symbols failed:", res.data.errors);
-          setError("Some stocks failed to load. Check console for details.");
-          setOpenError(true);
-          showErrorPopup("Some stocks failed to load.");
-        }
       } catch (err) {
-        setError("Failed to fetch watchlist. Please try again later.");
-        setOpenError(true);
+        showErrorPopup("somthing went rong");
       }
     };
 
